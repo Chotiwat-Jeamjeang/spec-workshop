@@ -73,28 +73,28 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SUBM-01 | TBD | Pending |
-| SUBM-02 | TBD | Pending |
-| SUBM-03 | TBD | Pending |
-| SUBM-04 | TBD | Pending |
-| PHOTO-01 | TBD | Pending |
-| PHOTO-02 | TBD | Pending |
-| AI-01 | TBD | Pending |
-| AI-02 | TBD | Pending |
-| AI-03 | TBD | Pending |
-| STORE-01 | TBD | Pending |
-| QUEUE-01 | TBD | Pending |
-| QUEUE-02 | TBD | Pending |
-| QUEUE-03 | TBD | Pending |
-| NOTIFY-01 | TBD | Pending |
-| ABUSE-01 | TBD | Pending |
-| ABUSE-02 | TBD | Pending |
+| SUBM-01 | Phase 1 | Pending |
+| SUBM-02 | Phase 1 | Pending |
+| SUBM-03 | Phase 1 | Pending |
+| SUBM-04 | Phase 1 | Pending |
+| PHOTO-01 | Phase 2 | Pending |
+| PHOTO-02 | Phase 2 | Pending |
+| AI-01 | Phase 2 | Pending |
+| AI-02 | Phase 2 | Pending |
+| AI-03 | Phase 2 | Pending |
+| STORE-01 | Phase 3 | Pending |
+| QUEUE-01 | Phase 4 | Pending |
+| QUEUE-02 | Phase 4 | Pending |
+| QUEUE-03 | Phase 4 | Pending |
+| NOTIFY-01 | Phase 5 | Pending |
+| ABUSE-01 | Phase 6 | Pending |
+| ABUSE-02 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 0 (pending roadmap creation)
-- Unmapped: 16 ⚠️
+- Mapped to phases: 16 (roadmap created)
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-08-18*
-*Last updated: 2026-08-18 after initial definition*
+*Last updated: 2026-08-18 after roadmap creation*
