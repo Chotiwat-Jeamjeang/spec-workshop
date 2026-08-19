@@ -26,7 +26,13 @@
         <% } %>
 
         <% if (mode === 'error') { %>
-          <!-- error branch: implemented in Task 2 of this plan -->
+          <div class="error-banner">
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+              <path d="M10 2 1 18h18L10 2zm0 5a1 1 0 0 1 1 1v4a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1zm0 8a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/>
+            </svg>
+            <p class="error-banner__message"><%= message %></p>
+            <a href="/report" class="error-banner__link">หรือเลือกจุดจากรายการ</a>
+          </div>
         <% } %>
 
         <% if (mode === 'dropdown' && locations.length === 0) { %>

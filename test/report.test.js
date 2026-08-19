@@ -97,6 +97,61 @@ test('GET /api/locations returns only location_id and name', async () => {
   });
 });
 
+test('GET /report with an unregistered location_id is rejected with the generic message', async () => {
+  const res = await request(app).get(`/report?location_id=NOPE&sig=${'0'.repeat(32)}`);
+
+  assert.strictEqual(res.status, 400);
+  assert.ok(res.text.includes('ไม่พบจุดนี้ในระบบ กรุณาติดต่อเจ้าหน้าที่'));
+});
+
+test('GET /report with a registered location_id and no sig is rejected with the generic message', async () => {
+  const res = await request(app).get('/report?location_id=LIB');
+
+  assert.strictEqual(res.status, 400);
+  assert.ok(res.text.includes('ไม่พบจุดนี้ในระบบ กรุณาติดต่อเจ้าหน้าที่'));
+});
+
+test('GET /report with an empty location_id and empty sig is rejected with the generic message', async () => {
+  const res = await request(app).get('/report?location_id=&sig=');
+
+  assert.strictEqual(res.status, 400);
+  assert.ok(res.text.includes('ไม่พบจุดนี้ในระบบ กรุณาติดต่อเจ้าหน้าที่'));
+});
+
+test('all four QR failure response bodies are byte-identical', async () => {
+  const wrongSig = signLocationId('LIB');
+
+  const [unregistered, mismatched, missingSig, emptyId] = await Promise.all([
+    request(app).get(`/report?location_id=NOPE&sig=${'0'.repeat(32)}`),
+    request(app).get(`/report?location_id=CAFE&sig=${wrongSig}`),
+    request(app).get('/report?location_id=LIB'),
+    request(app).get('/report?location_id=&sig='),
+  ]);
+
+  assert.strictEqual(unregistered.status, 400);
+  assert.strictEqual(mismatched.status, 400);
+  assert.strictEqual(missingSig.status, 400);
+  assert.strictEqual(emptyId.status, 400);
+
+  assert.strictEqual(unregistered.text, mismatched.text);
+  assert.strictEqual(mismatched.text, missingSig.text);
+  assert.strictEqual(missingSig.text, emptyId.text);
+});
+
+test('the QR failure response offers an escape hatch back to the dropdown', async () => {
+  const res = await request(app).get(`/report?location_id=NOPE&sig=${'0'.repeat(32)}`);
+
+  assert.ok(res.text.includes('error-banner'));
+  assert.ok(res.text.includes('หรือเลือกจุดจากรายการ'));
+});
+
+test('GET /report with no query string at all is still 200 and renders the dropdown', async () => {
+  const res = await request(app).get('/report');
+
+  assert.strictEqual(res.status, 200);
+  assert.ok(res.text.includes('location-select'));
+});
+
 test('verifyLocationSignature accepts a signature minted for the same id', () => {
   assert.strictEqual(verifyLocationSignature('LIB', signLocationId('LIB')), true);
 });

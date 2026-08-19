@@ -37,19 +37,25 @@ router.get('/report', (req, res) => {
     });
   }
 
-  // Single generic message for every failure reason (missing param, unknown
-  // id, bad/mismatched signature) -- never reveal which one it was. Log the
-  // specific reason server-side only. Consolidated into a rendered error
-  // state with an escape hatch in Task 2 of this plan.
+  // Consolidated failure branch: every QR-path failure reason (unregistered
+  // id, tampered/mismatched signature, missing sig, empty id) funnels into
+  // this single response with exactly one message string -- never a
+  // per-reason variant, so a probe can't distinguish which check failed.
+  // The specific reason is logged server-side only, never in the body.
   if (!locationId) {
-    console.warn('[GET /report] rejected: location_id missing or empty from query');
+    console.error('[GET /report] rejected: empty location_id');
   } else if (!known) {
-    console.warn(`[GET /report] rejected: unknown location_id "${locationId}"`);
+    console.error(`[GET /report] rejected: unknown location_id "${locationId}"`);
   } else if (!sigOk) {
-    console.warn(`[GET /report] rejected: invalid signature for location_id "${locationId}"`);
+    console.error(`[GET /report] rejected: invalid signature for location_id "${locationId}"`);
   }
 
-  return res.status(400).send(INVALID_QR_MESSAGE);
+  return res.status(400).render('report', {
+    mode: 'error',
+    message: INVALID_QR_MESSAGE,
+    locations: locationStore.getAll(),
+    locked: null,
+  });
 });
 
 router.get('/api/locations', (req, res) => {
