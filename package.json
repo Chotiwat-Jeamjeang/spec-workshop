@@ -4,7 +4,7 @@
   "description": "ระบบสำหรับแจ้งจุดที่มีขยะหรือถังขยะเต็มภายในมหาวิทยาลัย ให้เจ้าหน้าที่รับแจ้งและเข้าดำเนินการได้อย่างรวดเร็ว โดยมี AI ช่วยจำแนกประเภทขยะและวิเคราะห์ระดับความเร่งด่วนในการจัดเก็บจากรูปภาพที่ผู้ใช้งานแนบมา",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,14 @@
   },
   "homepage": "https://github.com/Chotiwat-Jeamjeang/spec-workshop#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "@anthropic-ai/sdk": "^0.117.1",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "multer": "^2.2.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "supertest": "^7.2.2"
   }
 }

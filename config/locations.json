@@ -1,0 +1,7 @@
+[
+  { "location_id": "A", "name": "จุด A", "lat": 13.7469, "lng": 100.5349 },
+  { "location_id": "B", "name": "จุด B", "lat": 13.7472, "lng": 100.5361 },
+  { "location_id": "DORM-1", "name": "หอพัก 1", "lat": 13.7481, "lng": 100.5340 },
+  { "location_id": "LIB", "name": "หอสมุด", "lat": 13.7465, "lng": 100.5375 },
+  { "location_id": "CAFE", "name": "โรงอาหาร", "lat": 13.7478, "lng": 100.5355 }
+]
