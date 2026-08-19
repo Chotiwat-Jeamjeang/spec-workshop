@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>แจ้งจุดขยะ</title>
+  <link rel="stylesheet" href="/css/report.css">
+</head>
+<body data-mode="<%= mode %>">
+  <div class="page">
+    <form class="form-card">
+      <h1 class="page-title">แจ้งจุดขยะ</h1>
+
+      <div class="location-block">
+        <% if (mode === 'locked') { %>
+          <div class="location-locked">
+            <span class="location-locked__badge">
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="M8 1a3 3 0 0 0-3 3v2H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1V4a3 3 0 0 0-3-3zm-1.5 5V4a1.5 1.5 0 0 1 3 0v2h-3z"/>
+              </svg>
+              ยืนยันจาก QR
+            </span>
+            <span class="location-locked__name"><%= locked.name %></span>
+            <a href="#" class="location-not-this" id="btn-not-this">ไม่ใช่จุดนี้</a>
+          </div>
+        <% } else if (mode === 'dropdown') { %>
+          <!-- dropdown branch: implemented in plan 01-02 -->
+        <% } else if (mode === 'error') { %>
+          <!-- error branch: implemented in plan 01-02 -->
+        <% } %>
+      </div>
+
+      <button type="button" id="btn-next" class="cta cta--primary">ถัดไป</button>
+    </form>
+  </div>
+</body>
+</html>
