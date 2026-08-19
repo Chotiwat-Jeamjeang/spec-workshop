@@ -9,8 +9,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Submission (SUBM)
 
-- [ ] **SUBM-01**: ผู้ใช้งานแจ้งจุดขยะได้โดยไม่ต้อง login ผ่านการสแกน QR Code หรือเลือกจุดจากรายการ/แผนที่ที่ลงทะเบียนไว้เท่านั้น (ไม่มี free-text address)
-- [ ] **SUBM-02**: ระบบปฏิเสธ QR ที่ `location_id` ไม่ตรงกับจุดที่ลงทะเบียน พร้อม error message
+- [x] **SUBM-01**: ผู้ใช้งานแจ้งจุดขยะได้โดยไม่ต้อง login ผ่านการสแกน QR Code หรือเลือกจุดจากรายการ/แผนที่ที่ลงทะเบียนไว้เท่านั้น (ไม่มี free-text address)
+- [x] **SUBM-02**: ระบบปฏิเสธ QR ที่ `location_id` ไม่ตรงกับจุดที่ลงทะเบียน พร้อม error message
 - [ ] **SUBM-03**: ผู้ใช้งานกรอกรายละเอียดเพิ่มเติมได้ (field `note`, optional, ไม่เกิน 500 ตัวอักษร)
 - [ ] **SUBM-04**: ฟอร์มโหลดเร็ว (FCP ≤2 วินาทีบน 4G) และ responsive ที่ 375px/768px/1024px
 
@@ -73,8 +73,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SUBM-01 | Phase 1 | Pending |
-| SUBM-02 | Phase 1 | Pending |
+| SUBM-01 | Phase 1 | Complete |
+| SUBM-02 | Phase 1 | Complete |
 | SUBM-03 | Phase 1 | Pending |
 | SUBM-04 | Phase 1 | Pending |
 | PHOTO-01 | Phase 2 | Pending |
@@ -91,6 +91,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ABUSE-02 | Phase 6 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 16 total
 - Mapped to phases: 16 (roadmap created)
 - Unmapped: 0 ✓
