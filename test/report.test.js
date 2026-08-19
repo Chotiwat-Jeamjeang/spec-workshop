@@ -33,6 +33,70 @@ test('GET /report with a signature minted for a different location is rejected',
   assert.ok(res.text.includes('ไม่พบจุดนี้ในระบบ กรุณาติดต่อเจ้าหน้าที่'));
 });
 
+test('GET /report with no query parameters renders the dropdown with all locations', async () => {
+  const res = await request(app).get('/report');
+  const all = locationStore.getAll();
+
+  assert.strictEqual(res.status, 200);
+  assert.ok(res.text.includes('location-select'));
+  assert.ok(res.text.includes('เลือกจุดที่แจ้ง'));
+  all.forEach((loc) => {
+    assert.ok(res.text.includes(loc.name), `expected body to include ${loc.name}`);
+  });
+
+  assert.match(res.text, /<option value="" disabled selected>เลือกจุดที่แจ้ง<\/option>/);
+
+  assert.ok(!/<input[^>]*type=["']text["']/i.test(res.text), 'must not contain a free-text input');
+  assert.ok(!/name=["']address["']/i.test(res.text), 'must not contain an element named address');
+});
+
+test('dropdown options appear in locationStore.getAll() order', async () => {
+  const res = await request(app).get('/report');
+  const all = locationStore.getAll();
+  const positions = all.map((loc) => res.text.indexOf(`value="${loc.location_id}"`));
+
+  positions.forEach((pos) => assert.ok(pos !== -1, 'every location_id should appear as an option value'));
+  const sorted = [...positions].sort((a, b) => a - b);
+  assert.deepStrictEqual(positions, sorted);
+});
+
+test('the locked response also ships the dropdown markup, hidden via is-hidden', async () => {
+  const res = await request(app).get(signedReportUrl('LIB'));
+  const all = locationStore.getAll();
+
+  assert.match(res.text, /location-dropdown[^"]*is-hidden/);
+  all.forEach((loc) => {
+    assert.ok(res.text.includes(`value="${loc.location_id}"`), `expected hidden dropdown to include option for ${loc.location_id}`);
+  });
+});
+
+test('rendering the dropdown branch with zero locations shows the empty state and disables controls', async () => {
+  const ejs = require('ejs');
+  const path = require('node:path');
+
+  const html = await ejs.renderFile(
+    path.join(__dirname, '..', 'views', 'report.ejs'),
+    { mode: 'dropdown', locations: [], locked: null, message: null }
+  );
+
+  assert.ok(html.includes('ไม่มีจุดที่ลงทะเบียนในระบบ'));
+  assert.ok(html.includes('ยังไม่มีจุดที่ลงทะเบียนในระบบ กรุณาติดต่อเจ้าหน้าที่'));
+  assert.match(html, /<select[^>]*disabled/);
+  assert.match(html, /id="btn-next"[\s\S]*?disabled/);
+});
+
+test('GET /api/locations returns only location_id and name', async () => {
+  const res = await request(app).get('/api/locations');
+
+  assert.strictEqual(res.status, 200);
+  assert.match(res.headers['content-type'], /json/);
+  const all = locationStore.getAll();
+  assert.strictEqual(res.body.length, all.length);
+  res.body.forEach((item) => {
+    assert.deepStrictEqual(Object.keys(item).sort(), ['location_id', 'name']);
+  });
+});
+
 test('verifyLocationSignature accepts a signature minted for the same id', () => {
   assert.strictEqual(verifyLocationSignature('LIB', signLocationId('LIB')), true);
 });

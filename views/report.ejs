@@ -23,14 +23,43 @@
             <span class="location-locked__name"><%= locked.name %></span>
             <a href="#" class="location-not-this" id="btn-not-this">ไม่ใช่จุดนี้</a>
           </div>
-        <% } else if (mode === 'dropdown') { %>
-          <!-- dropdown branch: implemented in plan 01-02 -->
-        <% } else if (mode === 'error') { %>
-          <!-- error branch: implemented in plan 01-02 -->
+        <% } %>
+
+        <% if (mode === 'error') { %>
+          <!-- error branch: implemented in Task 2 of this plan -->
+        <% } %>
+
+        <% if (mode === 'dropdown' && locations.length === 0) { %>
+          <div class="empty-state">
+            <h2 class="empty-state__heading">ไม่มีจุดที่ลงทะเบียนในระบบ</h2>
+            <p class="empty-state__body">ยังไม่มีจุดที่ลงทะเบียนในระบบ กรุณาติดต่อเจ้าหน้าที่</p>
+          </div>
+        <% } %>
+
+        <% if (mode === 'dropdown' || mode === 'locked') { %>
+          <div class="location-dropdown<%= mode === 'locked' ? ' is-hidden' : '' %>">
+            <label class="field-label" for="location-select">เลือกจุดที่แจ้ง</label>
+            <select
+              id="location-select"
+              name="location_id"
+              class="location-select"
+              <%= (mode === 'dropdown' && locations.length === 0) ? 'disabled' : '' %>
+            >
+              <option value="" disabled selected>เลือกจุดที่แจ้ง</option>
+              <% locations.forEach(function (loc) { %>
+                <option value="<%= loc.location_id %>"><%= loc.name %></option>
+              <% }); %>
+            </select>
+          </div>
         <% } %>
       </div>
 
-      <button type="button" id="btn-next" class="cta cta--primary">ถัดไป</button>
+      <button
+        type="button"
+        id="btn-next"
+        class="cta cta--primary"
+        <%= (mode === 'dropdown' && locations.length === 0) ? 'disabled' : '' %>
+      >ถัดไป</button>
     </form>
   </div>
 </body>
