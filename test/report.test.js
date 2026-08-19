@@ -1,0 +1,83 @@
+require('./helpers/signedUrl');
+
+const { test } = require('node:test');
+const assert = require('node:assert');
+const request = require('supertest');
+
+const { signedReportUrl } = require('./helpers/signedUrl');
+const { signLocationId, verifyLocationSignature } = require('../src/services/qrSignature');
+const locationStore = require('../src/services/locationStore');
+const app = require('../index');
+
+test('GET /report with a valid signed QR renders the locked location', async () => {
+  const lib = locationStore.findById('LIB');
+  const res = await request(app).get(signedReportUrl('LIB'));
+
+  assert.strictEqual(res.status, 200);
+  assert.ok(res.text.includes(lib.name), 'response body should contain the LIB location name');
+  assert.ok(res.text.includes('ยืนยันจาก QR'), 'response body should contain the locked badge text');
+});
+
+test('the locked response offers no free-text address entry', async () => {
+  const res = await request(app).get(signedReportUrl('LIB'));
+
+  assert.ok(!/<input[^>]*type=["']text["']/i.test(res.text), 'must not contain a free-text input');
+  assert.ok(!/name=["']address["']/i.test(res.text), 'must not contain an element named address');
+});
+
+test('GET /report with a signature minted for a different location is rejected', async () => {
+  const wrongSig = signLocationId('LIB');
+  const res = await request(app).get(`/report?location_id=CAFE&sig=${wrongSig}`);
+
+  assert.strictEqual(res.status, 400);
+  assert.ok(res.text.includes('ไม่พบจุดนี้ในระบบ กรุณาติดต่อเจ้าหน้าที่'));
+});
+
+test('verifyLocationSignature accepts a signature minted for the same id', () => {
+  assert.strictEqual(verifyLocationSignature('LIB', signLocationId('LIB')), true);
+});
+
+test('verifyLocationSignature rejects a signature minted for a different id', () => {
+  assert.strictEqual(verifyLocationSignature('CAFE', signLocationId('LIB')), false);
+});
+
+test('verifyLocationSignature never throws on malformed input', () => {
+  assert.strictEqual(verifyLocationSignature('LIB', 'zz'), false);
+  assert.strictEqual(verifyLocationSignature('LIB', 'abc'), false);
+  assert.strictEqual(verifyLocationSignature('LIB', undefined), false);
+  assert.strictEqual(verifyLocationSignature('LIB', null), false);
+  assert.strictEqual(verifyLocationSignature('LIB', 'a'.repeat(31)), false);
+  assert.strictEqual(verifyLocationSignature('LIB', 'a'.repeat(33)), false);
+});
+
+test('locationStore.getAll returns all 5 seed records', () => {
+  const all = locationStore.getAll();
+  assert.strictEqual(all.length, 5);
+});
+
+test('locationStore.findById uses exact string equality, no case-folding or trimming', () => {
+  const lib = locationStore.findById('LIB');
+  assert.ok(lib);
+  assert.strictEqual(lib.location_id, 'LIB');
+  assert.strictEqual(locationStore.findById('lib'), undefined);
+  assert.strictEqual(locationStore.findById('LIB '), undefined);
+});
+
+test('locationStore.getAll survives a BOM-prefixed registry file', () => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+
+  const raw = fs.readFileSync(path.join(__dirname, '..', 'config', 'locations.json'), 'utf8');
+  const bomPrefixed = '﻿' + raw;
+  const tmpFile = path.join(os.tmpdir(), `locations-bom-${Date.now()}.json`);
+  fs.writeFileSync(tmpFile, bomPrefixed, 'utf8');
+
+  try {
+    const stripped = fs.readFileSync(tmpFile, 'utf8').replace(/^﻿/, '');
+    const parsed = JSON.parse(stripped);
+    assert.strictEqual(parsed.length, 5);
+  } finally {
+    fs.unlinkSync(tmpFile);
+  }
+});
