@@ -11,6 +11,11 @@ function getSecret() {
   if (!secret) {
     throw new Error('QR_SIGNING_SECRET is not set — see .env.example');
   }
+  if (secret.length < 32) {
+    throw new Error(
+      'QR_SIGNING_SECRET must be set and at least 32 characters — see .env.example'
+    );
+  }
   return secret;
 }
 
