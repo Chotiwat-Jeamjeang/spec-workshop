@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 current_phase: 1
 current_phase_name: Location & Submission Entry
 status: executing
-stopped_at: Completed 01-03-PLAN.md (report form stylesheet)
-last_updated: "2026-08-19T18:06:25.872Z"
+stopped_at: Completed 01-04-PLAN.md (QR generation CLI)
+last_updated: "2026-08-19T18:12:57.691Z"
 last_activity: 2026-08-19
 last_activity_desc: Phase 1 execution started
-state_head: 5028a8da4bf2c18827a1a1acfe68fe1271ddd4d6
+state_head: ec15651033962824e1654d4f6a01b1a75777c266
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 7
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-08-18)
 ## Current Position
 
 Phase: 1 (Location & Submission Entry) — EXECUTING
-Plan: 4 of 7
+Plan: 5 of 7
 Status: Ready to execute
 Last activity: 2026-08-19 — Phase 1 execution started
 
-Progress: [████░░░░░░] 43%
+Progress: [██████░░░░] 57%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [████░░░░░░] 43%
 | Phase 01 P01 | 25min | 3 tasks | 10 files |
 | Phase 01 P02 | 15min | 2 tasks | 3 files |
 | Phase 01 P03 | 12min | 2 tasks | 1 files |
+| Phase 01 P04 | ~10min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,8 @@ Recent decisions affecting current work:
 - [Phase 1]: Consolidated QR-rejection error branch renders one Thai message for every failure reason (unregistered id, mismatched sig, missing sig, empty id), verified byte-identical, with a plain link back to the dropdown as the escape hatch
 - [Phase 1]: report.css spacing/palette use CSS custom properties (var()); typography (font-size/font-weight) written as literal per-selector values, keeping the type scale directly greppable against the {14,16,20}px / {400,600} contract
 - [Phase 1]: Empty-state 'muted' treatment uses opacity: 0.7 rather than a fifth palette color, keeping report.css's palette exactly the four declared roles plus the one neutral border
+- [Phase 1]: QR generation stays a manual dev/ops CLI (node scripts/generate-qr.js) with zero HTTP surface — enforced by a source-level assertion in the automated verify step
+- [Phase 1]: Round-trip QR test (01-04 Task 2) reproduces the mint script's URL construction inline rather than shelling out to it, keeping the test filesystem-side-effect-free
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-08-19T18:06:25.838Z
-Stopped at: Completed 01-03-PLAN.md (report form stylesheet)
+Last session: 2026-08-19T18:12:57.653Z
+Stopped at: Completed 01-04-PLAN.md (QR generation CLI)
 Resume file: None
