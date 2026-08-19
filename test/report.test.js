@@ -201,7 +201,12 @@ test('the error-state response does not contain btn-not-this', async () => {
   assert.ok(!res.text.includes('btn-not-this'), 'error response must not contain btn-not-this');
 });
 
-test('report.js contains no fetch, XMLHttpRequest or dynamic import', () => {
+test('the ไม่ใช่จุดนี้ toggle handler performs zero network requests', () => {
+  // Scoped to the toggle's own click handler body, not the whole file:
+  // plan 01-06 legitimately adds a fetch() call elsewhere in this file
+  // (the CTA's POST /api/waste-reports/validate), so a file-wide ban is
+  // no longer the correct assertion for D2's "zero network requests" claim
+  // — only the mis-scan recovery toggle itself must stay network-free.
   const fs = require('node:fs');
   const path = require('node:path');
 
@@ -211,7 +216,26 @@ test('report.js contains no fetch, XMLHttpRequest or dynamic import', () => {
     .filter((line) => !line.trim().startsWith('//'))
     .join('\n');
 
-  assert.ok(!withoutComments.includes('fetch('), 'must not call fetch(');
+  const handlerStart = withoutComments.indexOf('btnNotThis.addEventListener');
+  const handlerEnd = withoutComments.indexOf('\n  }\n', handlerStart);
+  assert.ok(handlerStart !== -1, 'expected to find the btn-not-this click handler');
+  const handlerBody = withoutComments.slice(handlerStart, handlerEnd === -1 ? undefined : handlerEnd);
+
+  assert.ok(!handlerBody.includes('fetch('), 'toggle handler must not call fetch(');
+  assert.ok(!handlerBody.includes('XMLHttpRequest'), 'toggle handler must not use XMLHttpRequest');
+  assert.ok(!handlerBody.includes('import('), 'toggle handler must not use dynamic import(');
+});
+
+test('report.js contains no XMLHttpRequest or dynamic import anywhere', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+
+  const src = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'report.js'), 'utf8');
+  const withoutComments = src
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('//'))
+    .join('\n');
+
   assert.ok(!withoutComments.includes('XMLHttpRequest'), 'must not use XMLHttpRequest');
   assert.ok(!withoutComments.includes('import('), 'must not use dynamic import(');
 });
@@ -404,6 +428,90 @@ test('POST /api/waste-reports/validate persists nothing to disk', async () => {
   const after = fs.readdirSync(repoRoot);
   assert.deepStrictEqual(after, before, 'the repository root must contain no new or removed files');
   assert.ok(!fs.existsSync(path.join(repoRoot, 'waste-reports.json')), 'waste-reports.json must not be created');
+});
+
+test('the dropdown-mode response contains an empty, hidden validate-banner positioned above the CTA', async () => {
+  const res = await request(app).get('/report');
+
+  const bannerIdx = res.text.indexOf('id="validate-banner"');
+  const ctaIdx = res.text.indexOf('id="btn-next"');
+  assert.ok(bannerIdx !== -1, 'expected a #validate-banner element');
+  assert.ok(ctaIdx !== -1, 'expected the #btn-next CTA');
+  assert.ok(bannerIdx < ctaIdx, 'validate-banner must appear before the CTA in document order');
+
+  assert.match(res.text, /class="error-banner is-hidden" id="validate-banner"><\/div>/, 'validate-banner must render empty and hidden');
+});
+
+test('the locked-mode response also contains the empty, hidden validate-banner', async () => {
+  const res = await request(app).get(signedReportUrl('LIB'));
+
+  assert.match(res.text, /class="error-banner is-hidden" id="validate-banner"><\/div>/);
+});
+
+test('the dropdown-mode response contains an empty, hidden inline-error container adjacent to the select', async () => {
+  const res = await request(app).get('/report');
+
+  assert.match(res.text, /class="inline-error is-hidden" id="location-inline-error"><\/div>/, 'inline-error must render empty and hidden');
+});
+
+test('the locked-mode response carries location_id and sig as data attributes on the locked block', async () => {
+  const sig = signLocationId('LIB');
+  const res = await request(app).get(signedReportUrl('LIB'));
+
+  assert.ok(res.text.includes('data-location-id="LIB"'));
+  assert.ok(res.text.includes(`data-sig="${sig}"`));
+});
+
+test('public/js/report.js assigns message text with textContent, never innerHTML', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+
+  const src = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'report.js'), 'utf8');
+  const withoutComments = src
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('//'))
+    .join('\n');
+
+  assert.ok(!withoutComments.includes('innerHTML'), 'must not use innerHTML');
+});
+
+test('public/js/report.js contains the loading, failure and required-field copy', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+
+  const src = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'report.js'), 'utf8');
+
+  assert.ok(src.includes('กำลังตรวจสอบ...'), 'loading label missing');
+  assert.ok(src.includes('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'), 'failure banner copy missing');
+  assert.ok(src.includes('กรุณาเลือกจุดที่แจ้ง'), 'required-field copy missing');
+});
+
+test('public/js/report.js re-enables the CTA in a finally branch', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+
+  const src = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'report.js'), 'utf8');
+
+  assert.ok(/\.finally\s*\(/.test(src), 'CTA must be re-enabled in a finally branch');
+});
+
+test('public/js/report.js never clears the select or note value on any path', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+
+  const src = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'report.js'), 'utf8');
+
+  assert.ok(!/(select|note)[A-Za-z]*\.value\s*=\s*(''|"")/.test(src), 'user input must never be cleared on an error path');
+});
+
+test('public/js/report.js posts JSON to /api/waste-reports/validate', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+
+  const src = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'report.js'), 'utf8');
+
+  assert.ok(src.includes('/api/waste-reports/validate'), 'validate endpoint URL missing');
+  assert.ok(src.includes("method: 'POST'"), 'must POST to the validate endpoint');
 });
 
 test('locationStore.getAll survives a BOM-prefixed registry file', () => {

@@ -30,6 +30,10 @@ router.get('/report', (req, res) => {
     return res.render('report', {
       mode: 'locked',
       locked: known,
+      // The exact sig that was just verified for this request -- carried
+      // into the page as a data attribute (plan 01-06 Task 2) so the CTA
+      // can submit it without ever re-parsing window.location.
+      lockedSig: sig,
       // Passed even in locked mode -- the "ไม่ใช่จุดนี้" control (plan 01-05)
       // needs the options already present in this same HTML response.
       locations: locationStore.getAll(),

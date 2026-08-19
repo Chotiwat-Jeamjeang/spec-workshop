@@ -13,7 +13,7 @@
 
       <div class="location-block">
         <% if (mode === 'locked') { %>
-          <div class="location-locked">
+          <div class="location-locked" data-location-id="<%= locked.location_id %>" data-sig="<%= lockedSig %>">
             <span class="location-locked__badge">
               <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
                 <path d="M8 1a3 3 0 0 0-3 3v2H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1V4a3 3 0 0 0-3-3zm-1.5 5V4a1.5 1.5 0 0 1 3 0v2h-3z"/>
@@ -56,6 +56,7 @@
                 <option value="<%= loc.location_id %>"><%= loc.name %></option>
               <% }); %>
             </select>
+            <div class="inline-error is-hidden" id="location-inline-error"></div>
           </div>
         <% } %>
       </div>
@@ -71,6 +72,8 @@
         ></textarea>
         <div id="note-counter" class="note-counter" aria-live="polite">0 / 500 ตัวอักษร</div>
       </div>
+
+      <div class="error-banner is-hidden" id="validate-banner"></div>
 
       <button
         type="button"
