@@ -31,7 +31,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. ระบบปฏิเสธ QR ที่ `location_id` ไม่ตรงกับจุดที่ลงทะเบียน พร้อมแสดง error message ที่เข้าใจง่าย
   3. ผู้ใช้งานกรอก `note` เพิ่มเติมได้ไม่เกิน 500 ตัวอักษร (ระบบป้องกัน/แจ้งเตือนเมื่อเกิน)
   4. ฟอร์มแสดงผล FCP ≤2 วินาทีบน 4G และแสดงผลถูกต้อง (responsive) ที่ 375px/768px/1024px
-**Plans**: TBD
+**Plans**: 7 plans (5 waves)
+Plans:
+- [ ] 01-01-PLAN.md — Walking Skeleton tracer: signed QR URL renders the locked report form end-to-end
+- [ ] 01-02-PLAN.md — Dropdown location picker, empty-registry state, and invalid-QR rejection
+- [ ] 01-03-PLAN.md — Responsive stylesheet per the UI contract, zero external requests
+- [ ] 01-04-PLAN.md — QR generation ops CLI with a mint-then-verify round-trip test
+- [ ] 01-05-PLAN.md — "ไม่ใช่จุดนี้" mis-scan recovery and the optional note field with a Thai-correct counter
+- [ ] 01-06-PLAN.md — Server-side validate endpoint and CTA wiring with loading/error states
+- [ ] 01-07-PLAN.md — FCP measurement under simulated 4G and responsive verification at 375/768/1024px
 **UI hint**: yes
 
 ### Phase 2: Photo Upload, Face-Blur & AI Classification
@@ -100,7 +108,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Location & Submission Entry | 0/TBD | Not started | - |
+| 1. Location & Submission Entry | 0/7 | Planned | - |
 | 2. Photo Upload, Face-Blur & AI Classification | 0/TBD | Not started | - |
 | 3. Report Persistence | 0/TBD | Not started | - |
 | 4. Officer Queue & Status Management | 0/TBD | Not started | - |
