@@ -109,4 +109,100 @@ not part of this commit.
 
 **`node --test`:** 56/56 passing after this task.
 
-<!-- gsd:write-continue -->
+---
+
+## Responsive verification (Task 3)
+
+### Stylesheet source assertions (automated)
+
+```
+node -e "<the exact expression from this task's <verify><automated> block>"
+```
+
+Result: **OK** — exactly two `min-width` media queries exist
+(`@media (min-width: 768px)` and `@media (min-width: 1024px)`), the 480px
+card ceiling (`max-width: 480px`) is declared inside the 768px query, and
+every interactive control (`.location-select`, `.cta`, `.location-not-this`)
+carries `min-height: 44px` — meeting the WCAG 2.5.5 44px touch-target floor
+noted in the UI contract.
+
+### Bug found and fixed during verification
+
+While capturing responsive screenshots, `#validate-banner` (the client-side
+validation error banner, meant to stay hidden via the `is-hidden` class until
+`report.js`'s `showMessage()` reveals it) rendered as a visible, empty,
+red-bordered box on every page load in every state, at every width — see the
+"before" screenshot evidence below. Root cause: `public/css/report.css`
+declared `.error-banner, #validate-banner { display: flex; ... }`; the
+`#validate-banner` **ID** selector (specificity `1,0,0`) always outranks
+`.is-hidden`'s **class** selector (`display: none`, specificity `0,1,0`),
+regardless of source order — so the element rendered even while carrying the
+`is-hidden` class. The same root cause silently affected
+`#location-inline-error` too (tied class-specificity with `.inline-error`,
+resolved by source order in `.inline-error`'s favor), though that element has
+no border/background and so produced no visible artifact — only a spurious
+4px margin-top.
+
+**Fix (Rule 1 — auto-fix bug):** `public/css/report.css`'s `.is-hidden` rule
+now reads `display: none !important;`, with a code comment explaining why the
+`!important` is deliberate (a utility "hidden" class must always win over any
+component rule, including ID selectors). No other file changed. Verified:
+`node --test` — 56/56 passing, unchanged from before the fix. The stylesheet
+source-assertions above were re-run after the fix and still pass unchanged
+(the fix touches only the `display` value inside an existing rule — no new
+media query, no breakpoint change, no min-height change).
+
+### Per-state, per-width results (post-fix)
+
+Measured with a small ephemeral Node script (`tmp-cdp-responsive.js`, deleted
+after use — not committed) that drove the same headless Edge instance over
+the Chrome DevTools Protocol using only Node's built-in `WebSocket` and
+`fetch` (zero new npm dependencies): for each of the 3 render states × 3
+widths, it set `Emulation.setDeviceMetricsOverride` to the target width,
+navigated, waited for `Page.loadEventFired`, read
+`document.documentElement.scrollWidth` / `clientWidth` /
+`window.innerWidth` / the `.form-card` bounding-box width via
+`Runtime.evaluate`, and captured a PNG via `Page.captureScreenshot`. All 9
+screenshots were visually inspected directly (image contents reviewed, not
+just the numeric metrics) before recording any result below.
+
+| State | Width | scrollWidth | clientWidth | innerWidth | Overflow? | `.form-card` width | Expected | Visual check |
+|---|---:|---:|---:|---:|---|---:|---|---|
+| dropdown | 375px | 375 | 375 | 375 | No | 343px | full-width, 16px side padding, no max-width (375−32=343 ✓) | Pass — single column, Thai glyphs render correctly, no phantom banner (post-fix) |
+| dropdown | 768px | 768 | 768 | 768 | No | 480px | centred card, max-width 480px | Pass |
+| dropdown | 1024px | 1024 | 1024 | 1024 | No | 480px | centred card, max-width 480px, 32px page margin | Pass |
+| locked | 375px | 375 | 375 | 375 | No | 343px | full-width, 16px side padding | Pass — lock badge, location name, "ไม่ใช่จุดนี้" link all visible and tappable |
+| locked | 768px | 768 | 768 | 768 | No | 480px | centred card, max-width 480px | Pass |
+| locked | 1024px | 1024 | 1024 | 1024 | No | 480px | centred card, max-width 480px, 32px page margin | Pass |
+| error | 375px | 375 | 375 | 375 | No | 343px | full-width, 16px side padding | Pass — exact SPEC message "ไม่พบจุดนี้ในระบบ กรุณาติดต่อเจ้าหน้าที่" renders, wraps correctly, no clipping |
+| error | 768px | 768 | 768 | 768 | No | 480px | centred card, max-width 480px | Pass |
+| error | 1024px | 1024 | 1024 | 1024 | No | 480px | centred card, max-width 480px, 32px page margin | Pass |
+
+**Outcome: 9/9 pass.** No horizontal overflow at any width in any state
+(`scrollWidth === clientWidth === innerWidth` in every measurement — a
+non-zero difference would indicate content wider than the viewport). The
+`.form-card` width matches the UI contract exactly: 343px at 375px (full
+width minus 16px side padding on each side, no max-width constraint) and
+480px at both 768px and 1024px (the centred card ceiling). Thai text
+rendered as real glyphs (system font stack resolved correctly) in every
+screenshot reviewed — no fallback boxes. The note `<textarea>` remained a
+fixed-height, internally-scrollable field at every width (matches
+`.note-input`'s `resize: vertical; overflow-y: auto;`, no auto-grow).
+Touch-target controls (`<select>`, `ถัดไป` button, `ไม่ใช่จุดนี้` link) all
+render at a comfortable width for one-handed use at 375px.
+
+---
+
+## Summary against acceptance criteria
+
+- FCP ≤2000ms for all three states: **PASS** — worst case (error, 958.31ms)
+  is still 1041.69ms under budget.
+- Single origin (`http://localhost:3000`) in the network waterfall for all
+  three states: **PASS**.
+- No horizontal overflow at 375px / 768px / 1024px, across all three states:
+  **PASS** (9/9).
+- `package.json` contains no `lighthouse` entry: **PASS** (confirmed by
+  byte-diff before/after every `npx` invocation).
+- No Lighthouse JSON artifact committed to the repository: **PASS** (all
+  written to the OS temp directory).
+- `node --test` exits 0: **PASS** (56/56, both before and after the CSS fix).

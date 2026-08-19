@@ -148,8 +148,18 @@ body {
  * badge presence and control type differ (D-08).
  */
 
+/*
+ * `!important` is deliberate here: `.is-hidden` must always win over any
+ * component rule regardless of selector specificity or source order,
+ * including ID-selector rules like `#validate-banner`'s `display: flex`
+ * (part of the `.error-banner, #validate-banner` group). Without it, the
+ * ID selector's higher specificity (1,0,0 vs 0,1,0) makes the element
+ * visibly render — a real bug found during SUBM-04 responsive
+ * verification: `#validate-banner` rendered as an empty bordered box on
+ * every page load despite carrying the `is-hidden` class.
+ */
 .is-hidden {
-  display: none;
+  display: none !important;
 }
 
 .location-locked {
