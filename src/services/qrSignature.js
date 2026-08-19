@@ -32,6 +32,14 @@ function signLocationId(locationId) {
  * @returns {boolean}
  */
 function verifyLocationSignature(locationId, providedSig) {
+  // locationId must be a non-empty string before it ever reaches
+  // crypto.createHmac(...).update() -- Express turns a repeated query key
+  // (?location_id=A&location_id=B) into an array, and Hmac#update() throws
+  // a TypeError on non-string/Buffer/TypedArray input. This guard is what
+  // makes the "never throws on malformed/garbage input" contract above
+  // actually hold for every caller.
+  if (typeof locationId !== 'string' || locationId.length === 0) return false;
+
   // Buffer.from(str, 'hex') silently truncates malformed hex instead of
   // throwing, so the length guard must happen before any decoding.
   if (typeof providedSig !== 'string' || providedSig.length !== 32) return false;

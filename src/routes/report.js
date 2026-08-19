@@ -7,14 +7,14 @@ const INVALID_QR_MESSAGE = 'ไม่พบจุดนี้ในระบบ 
 const router = express.Router();
 
 router.get('/report', (req, res) => {
-  const { location_id: locationId, sig } = req.query;
+  const rawLocationId = req.query.location_id;
 
   // Absent entirely (no query string / no location_id key at all) -> manual
   // dropdown entry path. No QR behind it, so registry membership is the
   // only meaningful constraint -- never require/check a signature here.
   // Branch on presence of the key, not truthiness of its value: an empty
   // string (`?location_id=`) is a malformed QR payload, not "absent".
-  if (locationId === undefined) {
+  if (rawLocationId === undefined) {
     return res.render('report', {
       mode: 'dropdown',
       locations: locationStore.getAll(),
@@ -22,6 +22,15 @@ router.get('/report', (req, res) => {
       message: null,
     });
   }
+
+  // Express turns a repeated query key (?location_id=A&location_id=B) into
+  // an array. Narrow to a string here (the only type verifyLocationSignature
+  // and locationStore.findById are meant to receive) so a non-string value
+  // falls through to the consolidated failure branch below instead of
+  // reaching crypto.createHmac(...).update() and throwing an uncaught
+  // TypeError.
+  const locationId = typeof rawLocationId === 'string' ? rawLocationId : undefined;
+  const sig = typeof req.query.sig === 'string' ? req.query.sig : undefined;
 
   const known = locationId ? locationStore.findById(locationId) : undefined;
   const sigOk = locationId ? qrSignature.verifyLocationSignature(locationId, sig) : false;
