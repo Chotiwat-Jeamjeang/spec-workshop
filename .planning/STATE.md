@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 current_phase: 1
 current_phase_name: Location & Submission Entry
 status: executing
-stopped_at: Completed 01-05-PLAN.md (mis-scan recovery control + note field)
-last_updated: "2026-08-19T18:22:18.247Z"
+stopped_at: Completed 01-06-PLAN.md (validate endpoint + CTA wiring)
+last_updated: "2026-08-19T18:35:18.871Z"
 last_activity: 2026-08-19
 last_activity_desc: Phase 1 execution started
-state_head: 1705999b408d24e3af19833ebc6c019fbd829919
+state_head: 54fdbda92a11071953380d804ad032314c1f1ed2
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 0
 ---
 
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-08-18)
 ## Current Position
 
 Phase: 1 (Location & Submission Entry) — EXECUTING
-Plan: 6 of 7
+Plan: 7 of 7
 Status: Ready to execute
 Last activity: 2026-08-19 — Phase 1 execution started
 
-Progress: [███████░░░] 71%
+Progress: [█████████░] 86%
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ Progress: [███████░░░] 71%
 | Phase 01 P03 | 12min | 2 tasks | 1 files |
 | Phase 01 P04 | ~10min | 2 tasks | 4 files |
 | Phase 01 P05 | ~12min | 2 tasks | 3 files |
+| Phase 01 P06 | ~10min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,9 @@ Recent decisions affecting current work:
 - [Phase 1]: Round-trip QR test (01-04 Task 2) reproduces the mint script's URL construction inline rather than shelling out to it, keeping the test filesystem-side-effect-free
 - [Phase 1]: Note field renders unconditionally across all three /report modes, matching the existing unconditional CTA button, rather than introducing a new mode-gating rule
 - [Phase 1]: btn-not-this toggle uses guarded getElementById/querySelector lookups so one client script (public/js/report.js) safely serves all three render modes with no branching on server-rendered mode
+- [Phase 1]: POST /api/waste-reports/validate re-runs verifyLocationSignature/findById independently of any prior GET, returning a verdict only (no persistence, no id) -- resolves RESEARCH.md Open Question #1 as Option B
+- [Phase 1]: locked-mode GET /report now threads the exact verified sig into the template as data-location-id/data-sig attributes on .location-locked, so the CTA never re-parses window.location
+- [Phase 1]: 01-05's file-wide fetch-ban test was rescoped to the btn-not-this toggle handler only, since the CTA's validate POST legitimately adds fetch() elsewhere in public/js/report.js
 
 ### Pending Todos
 
@@ -104,6 +108,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-08-19T18:22:18.200Z
-Stopped at: Completed 01-05-PLAN.md (mis-scan recovery control + note field)
+Last session: 2026-08-19T18:35:18.509Z
+Stopped at: Completed 01-06-PLAN.md (validate endpoint + CTA wiring)
 Resume file: None

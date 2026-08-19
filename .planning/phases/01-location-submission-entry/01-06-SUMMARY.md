@@ -244,3 +244,7 @@ None beyond what this plan's own `<threat_model>` already covers (T-01-19 throug
 ---
 *Phase: 01-location-submission-entry*
 *Completed: 2026-08-20*
+
+## Self-Check: PASSED
+
+All 5 modified files confirmed present on disk; both task commit hashes (`90dc87a`, `c5fc5ec`) and the docs commit (`54fdbda`) confirmed present in `git log --oneline --all`.
