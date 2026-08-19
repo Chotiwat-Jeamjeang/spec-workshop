@@ -1,0 +1,143 @@
+/*
+ * public/css/report.css
+ * Mobile-first stylesheet for the waste-report entry form (SUBM-04).
+ * Hand-authored — no preprocessor, no framework, no build step.
+ * No @font-face, no @import, no remote asset URL: zero external
+ * network requests before first paint.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Spacing scale (multiples of 4px) — use only these tokens for margin/padding. */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+
+  /* Palette — exactly four roles, plus the one supporting neutral border. */
+  --color-bg: #FFFFFF;
+  --color-surface: #F1F5F9;
+  --color-accent: #16A34A;
+  --color-destructive: #DC2626;
+  --color-border: #CBD5E1;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  font-family: system-ui, -apple-system, "Segoe UI", "Leelawadee UI", "Noto Sans Thai", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Layout — 375px default, no media query. */
+
+.page {
+  width: 100%;
+  padding-left: var(--space-16);
+  padding-right: var(--space-16);
+}
+
+.form-card {
+  background-color: var(--color-surface);
+  padding: var(--space-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.page-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.location-block {
+  margin-top: var(--space-24);
+  margin-bottom: var(--space-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.field-label {
+  display: block;
+  margin-bottom: var(--space-8);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/*
+ * Touch-target controls — 44px minimum height at every breakpoint.
+ * This is the one deliberate exception to the 4px spacing scale
+ * (WCAG 2.5.5 target-size guidance for a one-handed mobile form).
+ */
+
+.location-select,
+.cta,
+.location-not-this {
+  min-height: 44px;
+}
+
+.location-select {
+  width: 100%;
+  padding: var(--space-8) var(--space-16);
+  font-size: 16px;
+  font-weight: 400;
+  font-family: inherit;
+  color: inherit;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--space-4);
+}
+
+.cta {
+  display: block;
+  width: 100%;
+  padding: var(--space-8) var(--space-16);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  font-family: inherit;
+  border: none;
+  border-radius: var(--space-8);
+  cursor: pointer;
+  text-align: center;
+}
+
+.cta--primary {
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.location-not-this {
+  display: inline-flex;
+  align-items: center;
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-accent);
+  text-decoration: underline;
+}
