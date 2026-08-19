@@ -286,6 +286,126 @@ test('a Thai sample string reports its .length, not a byte-derived count', () =>
   assert.ok(byteLength > thaiSample.length, 'UTF-8 byte length must be strictly greater than the code-unit length');
 });
 
+test('POST /api/waste-reports/validate with a valid signed submission returns 200 valid', async () => {
+  const sig = signLocationId('LIB');
+  const res = await request(app)
+    .post('/api/waste-reports/validate')
+    .send({ location_id: 'LIB', sig, note: 'ok' });
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.valid, true);
+  assert.strictEqual(res.body.location_id, 'LIB');
+  assert.strictEqual(res.body.name, locationStore.findById('LIB').name);
+  assert.deepStrictEqual(Object.keys(res.body).sort(), ['location_id', 'name', 'valid']);
+});
+
+test('POST /api/waste-reports/validate with a signature minted for a different location is rejected', async () => {
+  const sig = signLocationId('CAFE');
+  const res = await request(app)
+    .post('/api/waste-reports/validate')
+    .send({ location_id: 'LIB', sig, note: 'ok' });
+
+  assert.strictEqual(res.status, 400);
+  assert.deepStrictEqual(res.body, { error: 'ไม่พบจุดนี้ในระบบ กรุณาติดต่อเจ้าหน้าที่' });
+});
+
+test('POST /api/waste-reports/validate with an unregistered location_id and no sig is rejected', async () => {
+  const res = await request(app)
+    .post('/api/waste-reports/validate')
+    .send({ location_id: 'NOPE' });
+
+  assert.strictEqual(res.status, 400);
+  assert.deepStrictEqual(res.body, { error: 'ไม่พบจุดนี้ในระบบ กรุณาติดต่อเจ้าหน้าที่' });
+});
+
+test('POST /api/waste-reports/validate with a registered location_id and no sig (dropdown path) returns 200 valid', async () => {
+  const res = await request(app)
+    .post('/api/waste-reports/validate')
+    .send({ location_id: 'LIB' });
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.valid, true);
+});
+
+test('POST /api/waste-reports/validate with no location_id at all is rejected asking the user to choose one', async () => {
+  const res = await request(app)
+    .post('/api/waste-reports/validate')
+    .send({});
+
+  assert.strictEqual(res.status, 400);
+  assert.deepStrictEqual(res.body, { error: 'กรุณาเลือกจุดที่แจ้ง' });
+});
+
+test('POST /api/waste-reports/validate accepts a 500-code-unit Thai note', async () => {
+  const base = 'เร่งด่วนควรดำเนินการไม่เร่งด่วน';
+  let note = '';
+  while (note.length < 500) {
+    note += base;
+  }
+  note = note.slice(0, 500);
+  assert.strictEqual(note.length, 500);
+
+  const res = await request(app)
+    .post('/api/waste-reports/validate')
+    .send({ location_id: 'LIB', note });
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.valid, true);
+});
+
+test('POST /api/waste-reports/validate rejects a 501-code-unit Thai note', async () => {
+  const base = 'เร่งด่วนควรดำเนินการไม่เร่งด่วน';
+  let note = '';
+  while (note.length < 501) {
+    note += base;
+  }
+  note = note.slice(0, 501);
+  assert.strictEqual(note.length, 501);
+
+  const res = await request(app)
+    .post('/api/waste-reports/validate')
+    .send({ location_id: 'LIB', note });
+
+  assert.strictEqual(res.status, 400);
+  assert.deepStrictEqual(res.body, { error: 'รายละเอียดยาวเกินไป (ไม่เกิน 500 ตัวอักษร)' });
+});
+
+test('POST /api/waste-reports/validate accepts an absent note', async () => {
+  const res = await request(app)
+    .post('/api/waste-reports/validate')
+    .send({ location_id: 'LIB' });
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.valid, true);
+});
+
+test('POST /api/waste-reports/validate accepts an empty-string note', async () => {
+  const res = await request(app)
+    .post('/api/waste-reports/validate')
+    .send({ location_id: 'LIB', note: '' });
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.valid, true);
+});
+
+test('POST /api/waste-reports/validate persists nothing to disk', async () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const repoRoot = path.join(__dirname, '..');
+  const before = fs.readdirSync(repoRoot);
+
+  const sig = signLocationId('LIB');
+  await request(app).post('/api/waste-reports/validate').send({ location_id: 'LIB', sig, note: 'ok' });
+  await request(app).post('/api/waste-reports/validate').send({ location_id: 'CAFE', sig, note: 'ok' });
+  await request(app).post('/api/waste-reports/validate').send({});
+  const longNote = 'a'.repeat(501);
+  await request(app).post('/api/waste-reports/validate').send({ location_id: 'LIB', note: longNote });
+
+  const after = fs.readdirSync(repoRoot);
+  assert.deepStrictEqual(after, before, 'the repository root must contain no new or removed files');
+  assert.ok(!fs.existsSync(path.join(repoRoot, 'waste-reports.json')), 'waste-reports.json must not be created');
+});
+
 test('locationStore.getAll survives a BOM-prefixed registry file', () => {
   const fs = require('node:fs');
   const os = require('node:os');

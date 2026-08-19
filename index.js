@@ -16,6 +16,11 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Explicit small limit: the JSON body this app accepts (location_id, sig,
+// note) is at most a few hundred bytes; a default/unbounded limit would let
+// an oversized body reach handler code before any validation runs.
+app.use(express.json({ limit: '64kb' }));
+
 app.use(classifyRouter);
 app.use(reportRouter);
 
