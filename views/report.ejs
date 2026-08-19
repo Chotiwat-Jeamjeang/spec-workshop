@@ -60,6 +60,18 @@
         <% } %>
       </div>
 
+      <div class="note-field">
+        <label class="field-label" for="note">รายละเอียดเพิ่มเติม (ไม่บังคับ)</label>
+        <textarea
+          id="note"
+          name="note"
+          class="note-input"
+          maxlength="500"
+          aria-describedby="note-counter"
+        ></textarea>
+        <div id="note-counter" class="note-counter" aria-live="polite">0 / 500 ตัวอักษร</div>
+      </div>
+
       <button
         type="button"
         id="btn-next"

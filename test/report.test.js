@@ -222,6 +222,70 @@ test('the report view references a deferred /js/report.js script element', async
   assert.match(res.text, /<script[^>]*src=["']\/js\/report\.js["'][^>]*defer/);
 });
 
+test('the locked-state response contains the optional note field', async () => {
+  const res = await request(app).get(signedReportUrl('LIB'));
+
+  assert.match(res.text, /<textarea[^>]*id="note"[^>]*name="note"[^>]*maxlength="500"/);
+  assert.ok(!/<textarea[^>]*\brequired\b[^>]*id="note"/.test(res.text), 'note textarea must not be required');
+  assert.ok(!/<textarea[^>]*id="note"[^>]*\brequired\b/.test(res.text), 'note textarea must not be required');
+});
+
+test('the dropdown-state response contains the optional note field', async () => {
+  const res = await request(app).get('/report');
+
+  assert.match(res.text, /<textarea[^>]*id="note"[^>]*name="note"[^>]*maxlength="500"/);
+});
+
+test('the note counter is a polite live region with the correct initial text', async () => {
+  const res = await request(app).get('/report');
+
+  assert.match(res.text, /id="note-counter"[^>]*aria-live="polite"/);
+  assert.ok(res.text.includes('0 / 500 ตัวอักษร'), 'initial counter text should read 0 / 500 ตัวอักษร');
+});
+
+test('the note textarea is described by the counter and labelled correctly', async () => {
+  const res = await request(app).get('/report');
+
+  assert.match(res.text, /<textarea[^>]*id="note"[^>]*aria-describedby="note-counter"/);
+  assert.match(res.text, /<label[^>]*for="note"[^>]*>รายละเอียดเพิ่มเติม \(ไม่บังคับ\)<\/label>/);
+});
+
+test('report.js measures note length with .length, never Buffer.byteLength or TextEncoder', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+
+  const src = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'report.js'), 'utf8');
+  const withoutComments = src
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('//'))
+    .join('\n');
+
+  assert.ok(!withoutComments.includes('Buffer.byteLength'), 'must not measure note length in bytes');
+  assert.ok(!withoutComments.includes('TextEncoder'), 'must not measure note length via TextEncoder');
+  assert.ok(withoutComments.includes('note-counter'), 'counter wiring must be present');
+  assert.ok(withoutComments.includes('.length'), 'counter must be derived from .length');
+});
+
+test('a Thai sample string reports its .length, not a byte-derived count', () => {
+  // Repeats the RESEARCH.md Pitfall #3 sample to a known 200-code-unit
+  // length. The counter's own rule (note.value.length) is applied here
+  // directly, and the UTF-8 byte length is asserted strictly greater —
+  // documenting the trap so a future refactor to a byte measure fails
+  // loudly instead of quietly shrinking the limit.
+  const base = 'เร่งด่วนควรดำเนินการไม่เร่งด่วน'; // 31 UTF-16 code units
+  let thaiSample = '';
+  while (thaiSample.length < 200) {
+    thaiSample += base;
+  }
+  thaiSample = thaiSample.slice(0, 200);
+
+  assert.strictEqual(thaiSample.length, 200);
+  assert.strictEqual(`${thaiSample.length} / 500 ตัวอักษร`, '200 / 500 ตัวอักษร');
+
+  const byteLength = Buffer.byteLength(thaiSample, 'utf8');
+  assert.ok(byteLength > thaiSample.length, 'UTF-8 byte length must be strictly greater than the code-unit length');
+});
+
 test('locationStore.getAll survives a BOM-prefixed registry file', () => {
   const fs = require('node:fs');
   const os = require('node:os');

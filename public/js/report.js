@@ -30,4 +30,18 @@
       document.body.setAttribute('data-mode', 'dropdown');
     });
   }
+
+  var note = document.getElementById('note');
+  var noteCounter = document.getElementById('note-counter');
+
+  if (note && noteCounter) {
+    note.addEventListener('input', function () {
+      // Measure with .length (UTF-16 code units) — the same rule the
+      // browser's own maxlength attribute uses. Never Buffer.byteLength
+      // or TextEncoder: Thai script has no precomposed characters, so a
+      // byte-based measure would cap Thai notes at roughly a third of
+      // the stated 500-character limit.
+      noteCounter.textContent = note.value.length + ' / 500 ตัวอักษร';
+    });
+  }
 })();
