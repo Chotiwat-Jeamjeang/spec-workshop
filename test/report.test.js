@@ -182,6 +182,46 @@ test('locationStore.findById uses exact string equality, no case-folding or trim
   assert.strictEqual(locationStore.findById('LIB '), undefined);
 });
 
+test('the locked-state response contains the btn-not-this control', async () => {
+  const res = await request(app).get(signedReportUrl('LIB'));
+
+  assert.ok(res.text.includes('id="btn-not-this"'), 'locked response should contain btn-not-this');
+  assert.ok(res.text.includes('ไม่ใช่จุดนี้'), 'locked response should contain the control text');
+});
+
+test('the dropdown-state response does not contain btn-not-this', async () => {
+  const res = await request(app).get('/report');
+
+  assert.ok(!res.text.includes('btn-not-this'), 'dropdown response must not contain btn-not-this');
+});
+
+test('the error-state response does not contain btn-not-this', async () => {
+  const res = await request(app).get(`/report?location_id=NOPE&sig=${'0'.repeat(32)}`);
+
+  assert.ok(!res.text.includes('btn-not-this'), 'error response must not contain btn-not-this');
+});
+
+test('report.js contains no fetch, XMLHttpRequest or dynamic import', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+
+  const src = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'report.js'), 'utf8');
+  const withoutComments = src
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('//'))
+    .join('\n');
+
+  assert.ok(!withoutComments.includes('fetch('), 'must not call fetch(');
+  assert.ok(!withoutComments.includes('XMLHttpRequest'), 'must not use XMLHttpRequest');
+  assert.ok(!withoutComments.includes('import('), 'must not use dynamic import(');
+});
+
+test('the report view references a deferred /js/report.js script element', async () => {
+  const res = await request(app).get('/report');
+
+  assert.match(res.text, /<script[^>]*src=["']\/js\/report\.js["'][^>]*defer/);
+});
+
 test('locationStore.getAll survives a BOM-prefixed registry file', () => {
   const fs = require('node:fs');
   const os = require('node:os');
