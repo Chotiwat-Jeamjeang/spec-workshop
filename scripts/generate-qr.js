@@ -52,4 +52,7 @@ async function main() {
   }
 }
 
-main();
+main().catch((err) => {
+  console.error(`generate-qr failed: ${err.message}`);
+  process.exitCode = 1;
+});
