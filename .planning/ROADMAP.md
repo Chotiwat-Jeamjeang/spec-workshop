@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. ผู้ใช้งานกรอก `note` เพิ่มเติมได้ไม่เกิน 500 ตัวอักษร (ระบบป้องกัน/แจ้งเตือนเมื่อเกิน)
   4. ฟอร์มแสดงผล FCP ≤2 วินาทีบน 4G และแสดงผลถูกต้อง (responsive) ที่ 375px/768px/1024px
 
-**Plans**: 6/7 plans executed (5 waves)
+**Plans**: 7/7 plans executed (5 waves)
 Plans:
 **Wave 1**
 
@@ -57,7 +57,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 01-07-PLAN.md — FCP measurement under simulated 4G and responsive verification at 375/768/1024px
+- [x] 01-07-PLAN.md — FCP measurement under simulated 4G and responsive verification at 375/768/1024px
 
 **UI hint**: yes
 
@@ -142,7 +142,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Location & Submission Entry | 6/7 | In Progress|  |
+| 1. Location & Submission Entry | 7/7 | In Progress|  |
 | 2. Photo Upload, Face-Blur & AI Classification | 0/TBD | Not started | - |
 | 3. Report Persistence | 0/TBD | Not started | - |
 | 4. Officer Queue & Status Management | 0/TBD | Not started | - |
