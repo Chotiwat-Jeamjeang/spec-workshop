@@ -13,7 +13,7 @@
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Location & Submission Entry** - ผู้ใช้งานเข้าฟอร์มแจ้งขยะผ่าน QR/จุดที่ลงทะเบียนโดยไม่ต้อง login พร้อมกรอกรายละเอียดเพิ่มเติม
+- [x] **Phase 1: Location & Submission Entry** - ผู้ใช้งานเข้าฟอร์มแจ้งขยะผ่าน QR/จุดที่ลงทะเบียนโดยไม่ต้อง login พร้อมกรอกรายละเอียดเพิ่มเติม (completed 2026-08-20)
 - [ ] **Phase 2: Photo Upload, Face-Blur & AI Classification** - ผู้ใช้งานแนบรูปขยะอย่างปลอดภัยและเห็นผลจำแนกประเภท/ความเร่งด่วนจาก AI ทันที
 - [ ] **Phase 3: Report Persistence** - รายการแจ้งถูกบันทึกลงไฟล์อย่างปลอดภัยพร้อม backup และ fallback
 - [ ] **Phase 4: Officer Queue & Status Management** - เจ้าหน้าที่เห็นรายการเรียงตามความเร่งด่วนและเปลี่ยนสถานะได้โดยไม่ต้อง login
@@ -142,7 +142,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Location & Submission Entry | 7/7 | In Progress|  |
+| 1. Location & Submission Entry | 7/7 | Complete    | 2026-08-20 |
 | 2. Photo Upload, Face-Blur & AI Classification | 0/TBD | Not started | - |
 | 3. Report Persistence | 0/TBD | Not started | - |
 | 4. Officer Queue & Status Management | 0/TBD | Not started | - |

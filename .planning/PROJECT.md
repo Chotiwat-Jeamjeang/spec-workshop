@@ -12,13 +12,13 @@
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ ผู้ใช้งานแจ้งจุดขยะได้โดยไม่ต้อง login ผ่านการสแกน QR Code หรือเลือกจุดจากรายการที่ลงทะเบียนไว้เท่านั้น (SUBM-01) — Phase 1
+- ✓ ระบบปฏิเสธ QR ที่ `location_id` ไม่ตรงกับจุดที่ลงทะเบียน พร้อม error message (SUBM-02) — Phase 1
+- ✓ ผู้ใช้งานกรอกรายละเอียดเพิ่มเติมได้ (field `note`, optional, ไม่เกิน 500 ตัวอักษร) (SUBM-03) — Phase 1
+- ✓ ฟอร์มโหลดเร็ว (FCP ≤2 วินาทีบน 4G) และ responsive ที่ 375px/768px/1024px (SUBM-04) — Phase 1
 
 ### Active
 
-- [ ] ผู้ใช้งานแจ้งจุดขยะได้โดยไม่ต้อง login ผ่านการสแกน QR Code หรือเลือกจุดจากรายการ/แผนที่ที่ลงทะเบียนไว้เท่านั้น
-- [ ] ระบบปฏิเสธ QR ที่ `location_id` ไม่ตรงกับจุดที่ลงทะเบียน พร้อม error message
-- [ ] ผู้ใช้งานกรอกรายละเอียดเพิ่มเติมได้ (field `note`, optional, ไม่เกิน 500 ตัวอักษร)
 - [ ] ผู้ใช้งานแนบรูปภาพขยะได้ 1-3 รูปต่อรายการ (.jpg/.jpeg/.png/.webp เท่านั้น, ≤5MB ต่อไฟล์) โดยตรวจสอบ MIME type จริงจากไฟล์ ไม่ใช่แค่นามสกุล
 - [ ] AI จำแนกประเภทขยะจากภาพ (ขยะทั่วไป / รีไซเคิล / อินทรีย์ / อันตราย) และแสดงผลทันทีหลังอัปโหลด
 - [ ] AI ประเมินระดับความเร่งด่วนจากสัดส่วนพื้นที่ขยะปกคลุมในภาพ โดย threshold (เร่งด่วน/ควรดำเนินการ/ไม่เร่งด่วน) ปรับได้ผ่านไฟล์ config โดย admin ไม่ hardcode ในโค้ด
@@ -31,7 +31,6 @@
 - [ ] ระบบทำ face-blur อัตโนมัติก่อนบันทึกไฟล์ หากภาพที่อัปโหลดมีใบหน้าบุคคลติดมา
 - [ ] จำกัดอัตราการแจ้งจากผู้ใช้แต่ละคน/IP ไม่เกิน 5 รายการต่อชั่วโมง
 - [ ] ตรวจจับรายการแจ้งซ้ำด้วย dedup key (`location_id` + ช่วงเวลา 30 นาที) และรวมเข้ารายการเดิมแทนการสร้างใหม่
-- [ ] ฟอร์มโหลดเร็ว (FCP ≤2 วินาทีบน 4G) และ responsive ที่ 375px/768px/1024px
 
 ### Out of Scope
 
@@ -44,8 +43,9 @@
 
 - Tech stack ตาม SPEC: Node.js + Express, HTML/CSS/JS ฝั่ง frontend, เก็บข้อมูลเป็น JSON (ไม่มี database), QR Code, LINE Messaging API สำหรับแจ้งเตือน
 - AI สำหรับจำแนกประเภทขยะและประเมินความเร่งด่วนใช้ Claude API (vision + structured outputs) — เริ่มมี proof-of-concept แล้วที่ `src/services/wasteImageClassifier.js` และ `POST /api/waste-reports/classify` โดยโมเดลคืนค่า waste_type/coverage_percentage และแอปคำนวณ urgency จาก `config/ai-thresholds.json` เอง (ไม่ให้ AI ตัดสิน urgency ตรงๆ) เพื่อให้ตรงกับข้อกำหนดเรื่อง threshold ที่ admin ปรับได้
-- Repo ยังอยู่ช่วงเริ่มต้น: มี Express app skeleton, การอัปโหลด/ตรวจสอบไฟล์ภาพ (magic-byte validation) และ endpoint จำแนกภาพเท่านั้น ยังไม่มี QR flow, การบันทึกรายการ, LINE notification, หรือ dashboard เจ้าหน้าที่
 - ผลการจำแนกจาก AI เป็นเพียงคำแนะนำ ไม่ใช่ผลตัดสินสุดท้าย — ผู้ใช้งาน/เจ้าหน้าที่แก้ไขได้เสมอ
+- **Phase 1 เสร็จแล้ว (2026-08-20):** ฟอร์มแจ้งจุดขยะ (`GET /report`) ใช้งานได้จริงทั้ง 3 สถานะ — QR ที่ลงทะเบียน (signed URL, HMAC-SHA256 ผ่าน `src/services/qrSignature.js`), เลือกจากรายการ dropdown (ไม่มี QR), และสถานะ error เมื่อ QR ไม่ถูกต้อง พร้อม `POST /api/waste-reports/validate` ตรวจซ้ำฝั่ง server (ยังไม่บันทึกจริง — persistence เป็นงานของ Phase 3) รายชื่อจุดอยู่ใน `config/locations.json` (ยังเป็นชื่อสมมติ รอผู้ใช้ให้ชื่อจริง) สคริปต์ปั๊ม QR อยู่ที่ `scripts/generate-qr.js`
+- Repo ตอนนี้: มี Express app skeleton + endpoint จำแนกภาพ (Phase 2 ยังไม่แตะ) และฟอร์มแจ้งจุดขยะที่สมบูรณ์จาก Phase 1 ยังไม่มีการบันทึกรายการจริง (`waste-reports.json`), LINE notification, หรือ dashboard เจ้าหน้าที่
 
 ## Constraints
 
@@ -61,6 +61,10 @@
 | ใช้ Claude API (`claude-opus-5`) พร้อม structured outputs (`output_config.format` json_schema) สำหรับจำแนกภาพขยะ | ได้ผลลัพธ์ JSON ที่ตรง schema เสมอ ไม่ต้อง parse ข้อความอิสระหรือเสี่ยง format ผิดพลาด | ✓ Good |
 | คำนวณระดับความเร่งด่วนจาก `coverage_percentage` ที่ AI ประเมิน โดยเทียบกับ threshold ในโค้ดแอป ไม่ให้ AI ตอบ urgency ตรงๆ | ตรงตามข้อกำหนดใน SPEC ที่ต้องการให้ threshold ปรับได้ผ่านไฟล์ config โดย admin โดยไม่ hardcode ในโค้ด | ✓ Good |
 | ตรวจสอบชนิดไฟล์ภาพด้วย magic bytes แทนการเชื่อ MIME type/extension ที่ client ส่งมา | SPEC กำหนดชัดว่าต้องตรวจสอบ MIME type จริง ไม่เชื่อนามสกุลไฟล์อย่างเดียว | ✓ Good |
+| QR payload เป็น HMAC-SHA256-signed URL (ไม่ใช่ bare `location_id`) | one-way door — สติกเกอร์ QR พิมพ์จริงติดถังขยะแล้วเปลี่ยนรูปแบบทีหลังต้องพิมพ์/ติดใหม่ทั้งมหาวิทยาลัย ผู้ใช้ยืนยันเลือก signed-url เพื่อพิสูจน์ว่า QR มาจากระบบจริง ป้องกันการปลอม/เดา location_id | ✓ Good — Phase 1 |
+| `config/locations.json` เป็นไฟล์ hand-edited ธรรมดา (ไม่มี admin UI) ใส่ 5 จุดตัวอย่างชื่อสมมติไปก่อน | ตรงกับ scope Phase 1 ที่ยังไม่มี admin UI ตาม SPEC ผู้ใช้จะให้ชื่อจุดจริงมาแทนที่ทีหลัง | ✓ Good — Phase 1, รอชื่อจุดจริงจากผู้ใช้ |
+| เลือกจุดแบบ dropdown ธรรมดา ไม่ใช้แผนที่/pin | รักษา FCP ≤2s บน 4G โดยไม่ต้องโหลด map library | ✓ Good — Phase 1 |
+| `POST /api/waste-reports/validate` ตรวจสอบ QR/note ซ้ำฝั่ง server แต่ไม่บันทึกอะไรเลย | ปิดช่องโหว่ที่ client-side validation เพียงอย่างเดียวสามารถถูกข้ามได้ (curl/devtools) โดยยังไม่ผูกกับ persistence ที่เป็นงาน Phase 3 | ✓ Good — Phase 1 |
 
 ## Evolution
 
@@ -80,4 +84,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-18 after initialization*
+*Last updated: 2026-08-20 after Phase 1*

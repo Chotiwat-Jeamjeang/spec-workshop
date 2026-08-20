@@ -1,36 +1,36 @@
 ---
 gsd_state_version: 1.0
-current_phase: 1
-current_phase_name: Location & Submission Entry
-status: verifying
-stopped_at: Completed 01-07-PLAN.md (phase 01-location-submission-entry complete, all 7 plans done)
-last_updated: "2026-08-19T22:11:53.487Z"
-last_activity: 2026-08-19
-last_activity_desc: Phase 1 execution started
-state_head: b719316040900f2ab0b7d80fd4456c7a811aa872
+current_phase: 2
+current_phase_name: Photo Upload, Face-Blur & AI Classification
+status: planning
+stopped_at: Phase 1 complete, ready to plan Phase 2
+last_updated: "2026-08-20T06:25:52.885Z"
+last_activity: 2026-08-20
+last_activity_desc: Phase 1 complete, transitioned to Phase 2
+state_head: e9e1c494518cc12a0bdc88cd77ec1774c11451d2
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 7
   completed_plans: 7
-  percent: 0
+  percent: 17
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-08-18)
+See: .planning/PROJECT.md (updated 2026-08-20)
 
 **Core value:** ผู้ใช้งานแจ้งจุดขยะได้อย่างรวดเร็วโดยไม่ต้อง login และเจ้าหน้าที่เห็นรายการที่เร่งด่วนที่สุดก่อนเสมอ
-**Current focus:** Phase 1 — Location & Submission Entry
+**Current focus:** Phase 2 — Photo Upload, Face-Blur & AI Classification
 
 ## Current Position
 
-Phase: 1 (Location & Submission Entry) — EXECUTING
-Plan: 7 of 7
-Status: Phase complete — ready for verification
-Last activity: 2026-08-19 — Phase 1 execution started
+Phase: 2 — Photo Upload, Face-Blur & AI Classification
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-08-20 — Phase 1 complete, transitioned to Phase 2
 
 Progress: [██████████] 100%
 
@@ -38,7 +38,7 @@ Progress: [██████████] 100%
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans completed: 7
 - Average duration: - min
 - Total execution time: 0 hours
 
@@ -46,7 +46,7 @@ Progress: [██████████] 100%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1 | 7 | - | - |
 
 **Recent Trend:**
 
@@ -98,7 +98,8 @@ None yet.
 
 ### Blockers/Concerns
 
-None yet.
+- ⚠️ [Phase 1, non-blocking] `POST /api/waste-reports/classify` (Phase 2's proof-of-concept endpoint) has no threat-model entry of its own — Phase 1's `01-SECURITY.md` audit flagged it as unregistered attack surface since Phase 1's `index.js` changes make it reachable. Register it in Phase 2's own threat model.
+- ⚠️ [Phase 1, non-blocking] `QR_SIGNING_SECRET`'s ≥32-char minimum is enforced at first request (`qrSignature.js`), not at boot (`index.js` only checks non-empty) — a too-short secret boots cleanly and fails on first `/report` call instead of failing fast. Noted in `01-SECURITY.md`, not a register threat.
 
 ## Deferred Items
 
@@ -111,6 +112,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-08-19T22:11:53.448Z
-Stopped at: Completed 01-07-PLAN.md (phase 01-location-submission-entry complete, all 7 plans done)
+Last session: 2026-08-20T06:25:52.531Z
+Stopped at: Phase 1 complete, ready to plan Phase 2
 Resume file: None
