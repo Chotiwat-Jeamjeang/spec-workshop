@@ -1,31 +1,20 @@
 ---
-status: testing
+status: complete
 phase: 01-location-submission-entry
 source: [01-VERIFICATION.md]
 started: 2026-08-20T12:05:00Z
-updated: 2026-08-20T12:05:00Z
+updated: 2026-08-20T12:30:00Z
 ---
 
 ## Current Test
 
-number: 1
-name: Visual/UX quality in a real browser across all three states and breakpoints
-expected: |
-  Open http://localhost:3000/report in a real browser (QR-locked URL, manual dropdown, and the
-  error state) at 375px/768px/1024px and visually confirm the rendered form matches
-  01-UI-SPEC.md's Color/Typography/Copywriting contract — badge treatment, 4px accent left
-  border on the locked state vs 1px neutral border on the dropdown state, focus rings,
-  comfortable one-handed tap targets, and real Thai glyph rendering (not fallback boxes).
-  The locked and dropdown states should be visually unmistakable at a glance in the same DOM
-  position; no layout shift; Thai text renders with real glyphs; all controls are comfortably
-  tappable.
-awaiting: user response
+[testing complete]
 
 ## Tests
 
 ### 1. Visual/UX quality in a real browser
 expected: The locked and dropdown states are visually unmistakable at a glance in the same DOM position; no layout shift; Thai text renders with real glyphs; all controls are comfortably tappable at 375px/768px/1024px.
-result: [pending]
+result: pass
 
 ### 2. Physical QR phone-camera scan
 expected: |
@@ -35,7 +24,7 @@ expected: |
   a second location (e.g. qr-output/DORM-1.png) to confirm ids are not cross-wired. The phone's
   native camera should recognise the QR and offer to open the URL with no manual typing; the
   opened page should show the correct location locked, not the error state.
-result: [pending]
+result: pass
 
 ### 3. Live CTA loading/offline-failure behavior
 expected: |
@@ -46,14 +35,14 @@ expected: |
   location and typed note are still exactly as entered. Loading state should be visible and the
   button unusable while in flight; a network failure should show the failure banner without
   discarding the user's selection or note; the button should always recover.
-result: [pending]
+result: pass
 
 ## Summary
 
 total: 3
-passed: 0
+passed: 3
 issues: 0
-pending: 3
+pending: 0
 skipped: 0
 blocked: 0
 
