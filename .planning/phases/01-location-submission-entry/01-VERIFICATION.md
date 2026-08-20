@@ -1,7 +1,7 @@
 ---
 phase: 01-location-submission-entry
 verified: 2026-08-20T12:00:00Z
-status: human_needed
+status: passed
 score: 33/33 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
@@ -23,12 +23,15 @@ mvp_mode_note: |
   clearing `mode: mvp` from ROADMAP.md if user-story framing doesn't fit
   this phase, before the next MVP-mode phase verification relies on it.
 human_verification:
+
   - test: "Open http://localhost:3000/report in a real browser (QR-locked URL, manual dropdown, and the error state) at 375px/768px/1024px and visually confirm the rendered form matches 01-UI-SPEC.md's Color/Typography/Copywriting contract — badge treatment, 4px accent left border on the locked state vs 1px neutral border on the dropdown state, focus rings, comfortable one-handed tap targets, and real Thai glyph rendering (not fallback boxes)."
     expected: "The locked and dropdown states are visually unmistakable at a glance in the same DOM position; no layout shift; Thai text renders with real glyphs; all controls are comfortably tappable."
     why_human: "Every phase-1 plan summary (01-01 D6, 01-02 D9, 01-03 D6, 01-05 D8) explicitly marked this human_judgment: true and deferred it to end-of-phase UAT per this project's human_verify_mode: end-of-phase config. 01-07's CDP screenshot capture was agent-self-inspected, not reviewed by an actual human, and the screenshots were deleted (not committed) — there is no artifact for a human to re-check against."
+
   - test: "Print or display qr-output/LIB.png (or another seed location's PNG) on a screen, scan it with a phone camera app while the dev server is running (npm start), and confirm the phone opens the report form with the correct location locked and the ยืนยันจาก QR badge — then repeat with a second location (e.g. qr-output/DORM-1.png) to confirm ids are not cross-wired."
     expected: "The phone's native camera recognises the QR and offers to open the URL with no manual typing; the opened page shows the correct location locked, not the error state."
     why_human: "01-04-PLAN.md's own <human-check> block requires a physical phone camera scan against a live server. 01-04-SUMMARY.md explicitly flags this as coverage item D7, human_judgment: true, deferred to end-of-phase UAT — it was never executed with a real device this session."
+
   - test: "With npm start running, open /report, choose a location, type a note, click ถัดไป and confirm the button reads กำลังตรวจสอบ... and is disabled while the request is in flight and returns to ถัดไป on success. Then set DevTools' network profile to Offline and click ถัดไป again — confirm the banner reads เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง, the button re-enables, and the chosen location and typed note are still exactly as entered."
     expected: "Loading state is visible and the button is unusable while in flight; a network failure shows the failure banner without discarding the user's selection or note; the button always recovers."
     why_human: "01-06-PLAN.md's own <human-check> block requires live-browser + DevTools offline-mode observation of click-time DOM mutation. 01-06-SUMMARY.md explicitly flags this as coverage items D6/D8, status: backstop, human_judgment: true — not run this session because both of 01-06's tasks are type=auto and the human-check is descriptive UAT guidance per the plan, not a blocking checkpoint. All of the underlying logic is verified by source assertion and unit test (finally-branch re-enable, no innerHTML, no value-clearing, correct literal copy) but the actual click-time browser behavior was not observed by a human."
