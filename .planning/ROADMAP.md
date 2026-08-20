@@ -1,4 +1,4 @@
-# Roadmap: TeamBoard — ระบบแจ้งจุดขยะภายในมหาวิทยาลัย
+# Roadmap: Smart Waste Alert — ระบบแจ้งจุดขยะภายในมหาวิทยาลัย
 
 ## Overview
 
