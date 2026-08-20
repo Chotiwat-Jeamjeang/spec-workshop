@@ -2,7 +2,9 @@
 
 **Detector result:** `api-coverage.cjs --json` over this phase's scope returned `{"detected": false, "signals": []}` (run 2026-08-19 against `01-RESEARCH.md` + `01-CONTEXT.md`).
 
-No external API integration: Phase 1 calls no remote third-party service — QR images are produced locally by the `qrcode` npm package writing PNG files to disk, and QR payloads are signed/verified with Node's built-in `crypto` module in-process; the only "read" is the local file `config/locations.json`.
+No external API integration: QR generation and signing run entirely locally (qrcode npm package + Node crypto module) — no network calls, no remote service, no API key.
+
+Full detail: Phase 1 calls no remote third-party service — QR images are produced locally by the `qrcode` npm package writing PNG files to disk, and QR payloads are signed/verified with Node's built-in `crypto` module in-process; the only "read" is the local file `config/locations.json`.
 
 For completeness, the two capabilities that *could* be mistaken for external-API surface, and why they are not:
 
