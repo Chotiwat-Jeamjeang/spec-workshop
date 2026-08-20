@@ -1,10 +1,11 @@
 ---
 phase: 2
 slug: photo-upload-face-blur-ai-classification
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-08-20
+reviewed_at: 2026-08-20
 ---
 
 # Phase 2 — UI Design Contract
@@ -274,6 +275,10 @@ A slot in the `error` state still counts as "attached" for condition 1 (the file
 
 `--color-warning: #B45309;` must be added to the `:root` token block in `report.css` alongside the four existing roles.
 
+### Focal point
+
+Once ≥1 photo is attached, the primary visual anchor is the **urgency badge** of the most severe classified photo (red "เร่งด่วน" > amber "ควรดำเนินการ" > green "ไม่เร่งด่วน"), not the "ถัดไป" CTA — the badge's saturated color and top-of-row position are what should draw the reporter's eye first, since surfacing urgency to the eventual officer queue (QUEUE-02) is this phase's core value, and the CTA remains reachable via the same fixed position Phase 1 established. Before any photo is attached, the focal point is unchanged from Phase 1 (the CTA).
+
 ### Accessibility (`aria-live` status region)
 
 Add one shared, visually-hidden `aria-live="polite"` region (e.g. `#photo-status`) near the photo section, updated on every slot state transition (e.g. "กำลังประมวลผลรูปที่ 1", "รูปที่ 1: ขยะรีไซเคิล ควรดำเนินการ", "รูปที่ 1: จำแนกไม่สำเร็จ") — mirrors Phase 1's `#note-counter` `aria-live="polite"` pattern. This is necessary because the spinner-to-badge visual transition inside a 96px tile is not otherwise announced to screen-reader users.
@@ -328,11 +333,11 @@ Applicable state considerations resolved: 8 covered, 0 backstop, 0 unresolved.
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: FLAG (non-blocking — missing focal-point statement, added post-review below)
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved (2026-08-20) — 0 BLOCK, 1 non-blocking FLAG resolved inline (see "Focal point" under Photo Slot Component Contract)
